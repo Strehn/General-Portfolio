@@ -1,0 +1,45 @@
+#!/bin/bash                                                                                                                    
+
+echo enter a file name.
+read fileName
+ln=1
+
+touch tempFile.txt
+# read first value of a string
+while read line; do 
+
+temp="${line}"
+pat='^[0-9]'
+
+#echo $temp
+#echo $pat
+
+# see if result showed the file does have line numbers                                                                         
+if [[ $temp =~ $pat ]]
+then
+    echo "Removing line numbers"
+    #file has line numbers so they should be removed
+    #sed = $fileName | sed 's/^ *[^ ]* //' $fileName
+    #$line | sed -n 's/[!^0-9]//g'                                                                          
+    #cat $fileName | sed -e 's/^ *[^]* //'
+    echo "${line:2}" >> "tempFile.txt"
+    
+else
+    echo "Adding line numbers"
+    # file doesnt have line numbers so line numbers should be added                                                            
+    #sed '/./='  $fileName | sed '/./N; s/\n/ /'
+    #read line 
+    #if [ "$line" = ":q" ]; then
+	echo "${ln} ${line}" >> "tempFile.txt"
+     #fi
+     let "ln++"
+fi
+
+done < $fileName
+
+mv "tempFile.txt" $fileName
+
+echo
+echo "Printing the file after the script "
+cat $fileName
+echo

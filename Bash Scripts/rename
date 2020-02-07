@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+#get file name, check if there are underscores, if there are underscores then mv file_Name into fileName 
+#this does all of these in one command
+
+rename '_' '' *

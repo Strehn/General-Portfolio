@@ -1,0 +1,26 @@
+#!/bin/bash
+
+srcDir="$(pwd)"
+echo "Working directory is $srcDir"
+#echo "Enter a file name"
+#read fileName
+result="$(find $srcDir -type f -iname ".backup" -ls)"
+
+#result="$(find $srcDir -name ".backup")"
+#check if .backup exists if not make it
+if [ !$result ]; then
+    echo "making directory: .backup"
+    mkdir .backup
+fi
+#save all files into the .backup subdirectory
+destDir="${srcDir}/.backup"
+
+#tar czf $destDir $srcDir
+#shopt -s extglob dotglob
+#mv (.backup) .backup
+#shopt -u dotglob
+ls | grep -v .backup | xargs cp -t .backup
+
+echo "Backup finished"
+echo "listing files in $destDir"
+ls -la $destDir
