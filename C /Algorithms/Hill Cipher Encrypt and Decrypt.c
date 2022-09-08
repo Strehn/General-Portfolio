@@ -88,12 +88,8 @@ void enc_Hill(char message[], char key[], int ksize, int msize){
     q = createIntVector(&mVector, message, ksize, msize);
     msize += q;
     
-    // ----- compute the encrypted text -----
-    char ciphertext[msize];
+    // ----- compute & print the encrypted text -----
     matrixMultiply(&kMatrix, &mVector, ksize, msize);
-    
-    // ----- print the encrypted text -----
-    printArray(ciphertext, msize);
 }
 
 // ----- Decrypt and it's functions -----
@@ -114,12 +110,9 @@ void dec_Hill(char cipher[], char key[], int ksize, int msize){
     struct MATRIX cVector; 
     q = createIntVector(&cVector, cipher, ksize, msize);
     msize += q;
-    // ----- compute the encrypted text -----
-    char plaintext[msize];
-    matrixMultiply(&kMatrix, &cVector, ksize, msize);
     
-    // ----- print the decrypted text -----
-    printArray(plaintext, msize);
+    // ----- compute & print the decrypted text -----
+    matrixMultiply(&kMatrix, &cVector, ksize, msize);
  }
 
 void createIntMatrix(struct MATRIX *temp, char keystring[], int matrixsize){
@@ -175,6 +168,7 @@ void matrixMultiply(struct MATRIX *kMatrix, struct MATRIX *mVector, int ksize, i
        d e f * y =   dx + by + cz
        g h i   z     gx + hy + iz
     */
+    char text[msize];
     int i = 0, j = 0, k = 0, x = 0, temp = 0;
     for(i = 0; i < ksize; i++){
         for(j = 0; j < ksize; j++){
@@ -185,11 +179,13 @@ void matrixMultiply(struct MATRIX *kMatrix, struct MATRIX *mVector, int ksize, i
         k = 0; // reset vector row to 0
         temp = temp % 26; // stay in alphabet
         //temp = temp + 97; // move back to ASCII lowercase which is 97 - 122
-        char t = temp + 'a'; // need to do this for C's memory stuff to convert int to char*
-        printf("%c", t); // print the value
+        text[i] = (char) temp; // need to do this for C's memory stuff to convert int to char*
         x++; // increase vector column
         temp = 0; // clear temp
     }
+
+    // ----- print the text -----
+    printArray(text, msize);
 }
 
 void printArray(char array[], int size){
