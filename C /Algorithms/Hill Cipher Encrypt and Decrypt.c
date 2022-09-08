@@ -72,6 +72,56 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
+// ----- Encrypt and it's functions -----
+//encrypt takes a message string, key string, both sizes, and outputs the ciphertext
+void enc_Hill(char message[], char key[], int ksize, int msize){
+    int q = 0; 
+    // ----- put the character key into an integer matrix -----
+    //Note: This only works for single digits 0-9 i.e 22 wont work but im not going to change it :D!
+    struct MATRIX kMatrix; 
+    createIntMatrix(&kMatrix, key, ksize);
+    
+    // ----- generate the message vector -----
+    //Note: if msize / ksize isnt even q's will be added 
+    //Note: ignore puncuation and non letter symbols
+    struct MATRIX mVector; 
+    q = createIntVector(&mVector, message, ksize, msize);
+    msize += q;
+    
+    // ----- compute the encrypted text -----
+    char ciphertext[msize];
+    matrixMultiply(&kMatrix, &mVector, ksize, msize);
+    
+    // ----- print the encrypted text -----
+    printArray(ciphertext, msize);
+}
+
+// ----- Decrypt and it's functions -----
+//decrypt takes a cipher text string, a key string, the size of both and outputs the plaintext
+void dec_Hill(char cipher[], char key[], int ksize, int msize){
+    int q = 0;
+    // ----- put the key into a matrix ------
+    struct MATRIX kMatrix; 
+    createIntMatrix(&kMatrix, key, ksize);
+    // create I matrix 
+    struct MATRIX IMatrix;
+    
+    // ----- find the inverse -----
+    // calculate inverse by adj(x)/det(x)
+    inverse(&kMatrix, &IMatrix, ksize);
+    
+    // ----- generate the Ciphter Vector -----
+    struct MATRIX cVector; 
+    q = createIntVector(&cVector, cipher, ksize, msize);
+    msize += q;
+    // ----- compute the encrypted text -----
+    char plaintext[msize];
+    matrixMultiply(&kMatrix, &cVector, ksize, msize);
+    
+    // ----- print the decrypted text -----
+    printArray(plaintext, msize);
+ }
+
 void createIntMatrix(struct MATRIX *temp, char keystring[], int matrixsize){
     /* 1234 for a 2x2 key matrix would turn into
         1 2 
@@ -149,56 +199,6 @@ void printArray(char array[], int size){
     }
     printf("\n");
 }
-
-// ----- Encrypt and it's functions -----
-//encrypt takes a message string, key string, both sizes, and outputs the ciphertext
-void enc_Hill(char message[], char key[], int ksize, int msize){
-    int q = 0; 
-    // ----- put the character key into an integer matrix -----
-    //Note: This only works for single digits 0-9 i.e 22 wont work but im not going to change it :D!
-    struct MATRIX kMatrix; 
-    createIntMatrix(&kMatrix, key, ksize);
-    
-    // ----- generate the message vector -----
-    //Note: if msize / ksize isnt even q's will be added 
-    //Note: ignore puncuation and non letter symbols
-    struct MATRIX mVector; 
-    q = createIntVector(&mVector, message, ksize, msize);
-    msize += q;
-    
-    // ----- compute the encrypted text -----
-    char ciphertext[msize];
-    matrixMultiply(&kMatrix, &mVector, ksize, msize);
-    
-    // ----- print the encrypted text -----
-    printArray(ciphertext, msize);
-}
-
-// ----- Decrypt and it's functions -----
-//decrypt takes a cipher text string, a key string, the size of both and outputs the plaintext
-void dec_Hill(char cipher[], char key[], int ksize, int msize){
-    int q = 0;
-    // ----- put the key into a matrix ------
-    struct MATRIX kMatrix; 
-    createIntMatrix(&kMatrix, key, ksize);
-    // create I matrix 
-    struct MATRIX IMatrix;
-    
-    // ----- find the inverse -----
-    // calculate inverse by adj(x)/det(x)
-    inverse(&kMatrix, &IMatrix, ksize);
-    
-    // ----- generate the Ciphter Vector -----
-    struct MATRIX cVector; 
-    q = createIntVector(&cVector, cipher, ksize, msize);
-    msize += q;
-    // ----- compute the encrypted text -----
-    char plaintext[msize];
-    matrixMultiply(&kMatrix, &cVector, ksize, msize);
-    
-    // ----- print the decrypted text -----
-    printArray(plaintext, msize);
- }
 
  void Cofactor(struct MATRIX *kMatrix, struct MATRIX *tMatrix, int row, int column, int n){
     // copy into the temp matrix values not in the given row or column
