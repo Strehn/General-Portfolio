@@ -1,0 +1,125 @@
+// sydney petrehn
+// sieve of erathosthenes
+// Basically the numbers are held in a doubly linked list (No reason for it to be doubly linked thats just how i did it)
+// then popped off the stack when they are found not to be a prime
+#include <limits.h>
+#include<stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// A structure to represent a linked list of nodes
+struct Node {
+    int num;
+    struct Node* Previous;
+    struct Node* Next;
+};
+
+// Function to add an item to stack.  It increases top by 1
+void push(int num, struct Node *head){
+    // we know head will never be 0 in this function
+    struct Node* temp = head; 
+    int last = 0;
+    // step through list and add num
+    while(temp->num <= num){ // as soon as temp->num > num stop
+        if(temp->num == num){
+            return; // do nothing
+        }
+        if(temp->Next == NULL){ // last node in list
+            last = 1;
+            break;
+        }
+        temp = temp->Next;
+    }
+
+    struct Node *node = (struct Node*) malloc(sizeof(struct Node));
+    node->num = num;
+    if(last = 1){ // add to end of list
+        node->Next = NULL;
+        node->Previous = temp;
+        temp->Next = node;
+    }
+    else{
+        // inset between two nodes
+        node->Next = temp->Next;
+        node->Previous = temp;
+        temp->Next = node;
+    }
+}
+  
+// Function to remove an item from stack.  It decreases top by 1
+void pop(int num, struct Node *head)
+{
+    if(head == NULL){
+        // do nothing
+        return;
+    }
+    // temp nodes to step through list and remove num
+    struct Node* temp = head;
+    struct Node* previous = NULL;
+    // step through LL
+    while(temp->num != num){
+        // no match
+        if(temp->Next == NULL){
+            return;
+        }
+        else{
+            previous = temp;
+            temp = temp->Next;
+        }
+    }
+    // first node in list so head becomes next
+    if(temp == head){
+        head = head->Next;
+    }
+    else{
+        previous->Next = temp->Next;
+        // remove current node
+    }
+}
+
+void factor(int num, int max, struct Node *head){
+    int i = 2; // counter + number we are multiplying by
+    int temp; 
+    while(i <= max){
+        temp = num * i;
+        pop(temp, head);
+        i++; // increment counter 
+    }
+}
+
+void main(int argc, char *argv[]){ // ./a.out #
+    int i, nprimes = 1, num = 0;
+    sscanf(argv[1], "%d", &num); // char to int
+    
+    // create stack to hold the list of prime numbers 3-n
+    struct Node *head = (struct Node*) malloc(sizeof(struct Node));
+    head->num = 2;
+    head->Previous = NULL;
+    head->Next = NULL;
+
+    // would be faster to insert if I also used a last pointer but
+    // im not going to do that :)
+    i = 3; // increment since we just made the top 3 so every prime number from that on
+    while(i <= num){
+        push(i, head);
+        i++;
+    }
+
+    i = 2;  // reset i to 2
+    // factor every number of i -> argc this also does the prime factoring so only 
+    // need to use this once
+    while(i <= num){
+        factor(i, num, head);
+        i++;
+    }
+    // count the number of primes
+    // might as well save head just for fun so lets use a temp
+    struct Node* temp = head; 
+    while(temp->Next != NULL){
+        temp = temp->Next;
+        nprimes++;
+    }
+    //print the number of primes
+    printf("%d", nprimes);
+}
